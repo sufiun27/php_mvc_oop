@@ -1,0 +1,35 @@
+# Enable the rewrite engine provided by Apache's mod_rewrite module
+RewriteEngine On
+
+# -------------------------------------------------------------
+# These two conditions check if the requested resource is NOT
+# an existing file (-f) or NOT an existing directory (-d)
+# If it's an actual file or directory, Apache will serve it
+# normally without rewriting.
+# -------------------------------------------------------------
+
+# Condition 1: If the requested URL is not a real file
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Condition 2: If the requested URL is not a real directory
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# -------------------------------------------------------------
+# If the above two conditions are true (i.e., not a file or directory),
+# then rewrite the request to "index.php", passing the original URL
+# path as a query string parameter named "url"
+#
+# ^(.*)$     → Regex that captures the entire requested path
+# $1         → Refers to the captured value (entire path)
+#
+# [L,QSA] Flags:
+#   L   → This is the Last rule to be processed if it matches.
+#   QSA → Query String Append: If the original request had a query string,
+#         it will be appended to the new rewritten URL.
+#
+# Example:
+#   Request: /products/view/15?page=2
+#   Rewritten internally as: /index.php?url=products/view/15&page=2
+# -------------------------------------------------------------
+
+RewriteRule ^(.*)$ index.php?url=$1 [L,QSA]
