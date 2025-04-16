@@ -2,4 +2,4 @@
 
 define('ROOT', dirname(__DIR__));
 
-require ROOT . "\core\init.php";
+require ROOT . DIRECTORY_SEPARATOR."core".DIRECTORY_SEPARATOR."init.php";
