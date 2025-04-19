@@ -1,5 +1,5 @@
 <?php
-namespace Middleware;
+namespace App\Middleware;
 
 class Test
 {
@@ -7,7 +7,7 @@ class Test
     {
         // Example logic
         
-
+        echo 'from middleware';
         return true;
     }
 }

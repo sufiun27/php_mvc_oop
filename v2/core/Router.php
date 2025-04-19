@@ -54,7 +54,12 @@ class Router
                 // Run middleware if exists
                 if (!empty($route['middleware'])) {
                     $middlewareName = ucfirst($route['middleware']);
-                    $middlewareClass = ROOT . "\\app\\middleware\\$middlewareName";
+                    $middlewarePath = ROOT . DIRECTORY_SEPARATOR . "App" . DIRECTORY_SEPARATOR . "Middleware" . DIRECTORY_SEPARATOR . $middlewareName . ".php";
+                    $middlewareClass = "App\\Middleware\\$middlewareName";
+                    
+                    if (file_exists($middlewarePath)) {
+                        require_once $middlewarePath;
+                    }
 
                     if (class_exists($middlewareClass)) {
                         $middlewareInstance = new $middlewareClass;
