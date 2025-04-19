@@ -7,6 +7,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 $router = new Router();
 
 $router->get('/home/{id}/{name}', [HomeController::class, 'home']);
+
 $router->middleware('test')
        ->get('/home/{id}', [HomeController::class, 'index']);
 
