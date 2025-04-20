@@ -48,7 +48,9 @@ class Router
 
         foreach ($this->routes[$method] ?? [] as $route) {
             if (preg_match($route['pattern'], $uri, $matches)) {
+               
                 $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+                
                 $action = $route['action'];
 
                 // Run middleware if exists
@@ -83,6 +85,12 @@ class Router
                     [$controller, $controllerMethod] = $action;
                     require_once ROOT . "/app/controllers/" . basename(str_replace('\\', '/', $controller)) . ".php";
                     $controllerInstance = new $controller;
+
+                    //? if $params is empty, call the method without parameters
+                    if (empty($params)) {
+                        return $controllerInstance->$controllerMethod();
+                    }
+                    //? if $params is not empty, call the method with parameters
                     return $controllerInstance->$controllerMethod($params);
                 }
 

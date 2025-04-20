@@ -32,4 +32,4 @@ RewriteCond %{REQUEST_FILENAME} !-d
 #   Rewritten internally as: /index.php?url=products/view/15&page=2
 # -------------------------------------------------------------
 
-RewriteRule ^(.*)$ index.php?url=$1 [L,QSA]
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]

@@ -36,7 +36,10 @@ trait Database
 
         if ($success) {
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return $result ?: false;
+            if(is_array($result) && count($result))
+			{
+				return $result;
+			}
         }
 
         return false;

@@ -24,10 +24,4 @@ class Controller
         require $filePath;
     }
 
-    public function previewData($data)
-    {
-        echo "<pre>";
-        print_r($data);
-        echo "</pre>";
-    }
 }
