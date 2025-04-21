@@ -19,8 +19,18 @@ class Authentication extends Controller {
             if($user->validate($_POST)){
                
                 $user->insert($_POST);
+
+                $request=[
+                    'name' => $_POST['name'],
+                    'email' => $_POST['email'],
+                ];
+                
+                $userData = $user->first($request);
+
+                Session::set($userData['id'],'User created successfully!');
                
-                header("Location: http://localhost/php_mvc_oop/v2/public/signup");
+                showAll();
+                //header("Location: http://localhost/php_mvc_oop/v2/public/signup");
                
             }
             $data['errors'] = $user->errors;	
