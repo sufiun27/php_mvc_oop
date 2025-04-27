@@ -1,112 +1,43 @@
 <?php
+session_start();
 
-/**
- * Application Bootstrap File
- * Defines the loading order and initializes the application
- *
- * @package Application
- */
+class SharedValue {
+    public static $value = 0;
 
-// Exit if accessed directly
-if (!defined('ROOT')) {
-    http_response_code(403);
-    exit('Direct access forbidden');
-}
-
-// Autoloader configuration
-spl_autoload_register(
-    function ($classname) {
-    // Normalize class name to prevent path traversal
-    $classname = str_replace(['\\', '/'], '', $classname);
-    
-    $paths = [
-        ROOT . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . $classname . '.php',
-      //  ROOT . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'controllers' . DIRECTORY_SEPARATOR . $classname . '.php',
-      //  ROOT . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . $classname . '.php',
-    ];
-
-    foreach ($paths as $path) {
-        // Verify path is within application directory
-        $realPath = realpath($path);
-        if ($realPath !== false && file_exists($realPath)) {
-            require_once $realPath;
-            return true;
+    public static function increment() {
+        if (!isset($_SESSION['counter'])) {
+            $_SESSION['counter'] = 0;
         }
+        $_SESSION['counter']++;
     }
-    
-    return false;
-}, true, true);
 
-// require 'Router.php';
-// require 'config.php';
-// require 'functions.php';
-// require 'Database.php';
-// require 'Model.php';
-// require 'Controller.php';
-// require 'App_v2.php';
-
-//Define loading order
-$loadOrder = [
-    'Session' => 'core' . DIRECTORY_SEPARATOR . 'Session.php',
-    'FlashSession' => 'core' . DIRECTORY_SEPARATOR . 'FlashSession.php',
-    'Config' => 'core' . DIRECTORY_SEPARATOR . 'config.php',
-    'Functions' => 'core' . DIRECTORY_SEPARATOR . 'functions.php',
-    'Database' => 'core' . DIRECTORY_SEPARATOR . 'Database.php',
-    'Model' => 'core' . DIRECTORY_SEPARATOR . 'Model.php',
-    'Controller' => 'core' . DIRECTORY_SEPARATOR . 'Controller.php',
-    'Router' => 'core' . DIRECTORY_SEPARATOR . 'Router.php',
-    'App' => 'core' . DIRECTORY_SEPARATOR . 'App.php',
-];
-
-//  Load core files in specified order
-
-foreach ($loadOrder as $name => $path) {
-    $fullPath = ROOT . DIRECTORY_SEPARATOR . $path;
-    $realPath = realpath($fullPath);
-    
-    if ($realPath === false || !file_exists($realPath)) {
-        throw new Exception("Required core file not found: {$name} at {$path}");
+    public static function getValue() {
+        return isset($_SESSION['counter']) ? $_SESSION['counter'] : 0;
     }
-    
-    require_once $realPath;
 }
 
-// try {
-//     // Load core files in specified order
-//     foreach ($loadOrder as $name => $path) {
-//         $fullPath = ROOT . DIRECTORY_SEPARATOR . $path;
-//         $realPath = realpath($fullPath);
-        
-//         if ($realPath === false || !file_exists($realPath)) {
-//             throw new Exception("Required core file not found: {$name} at {$path}");
-//         }
-        
-//         require_once $realPath;
-//     }
-// } catch (Exception $e) {
-//     // Log error (assuming a logging system exists)
-//     error_log("Bootstrap Error: " . $e->getMessage());
-    
-//     // Display generic error in production
-//     if (defined('ENVIRONMENT') && ENVIRONMENT === 'production') {
-//         http_response_code(500);
-//         exit('Application initialization failed');
-//     }
-    
-//     // Detailed error in development
-//     http_response_code(500);
-//     exit('Bootstrap Error: ' . $e->getMessage());
-// }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['name'])) {
+        $name = htmlspecialchars($_POST['name']);
+        $_SESSION['name'] = $name;
+        echo "Name stored in session: " . $_SESSION['name'];
+    }
 
-// // Initialize application
-// try {
-//     $app = new App();
-//     $app->run();
-// } catch (Exception $e) {
-//     // Handle application initialization errors
-//     error_log("Application Error: " . $e->getMessage());
-//     http_response_code(500);
-//     exit(defined('ENVIRONMENT') && ENVIRONMENT === 'production' 
-//         ? 'Application failed to start'
-//         : 'Application Error: ' . $e->getMessage());
-// }
+    if (isset($_POST['increment'])) {
+        SharedValue::increment();
+    }
+}
+?>
+
+<form method="post" action="">
+    <label for="name">Enter your name:</label>
+    <input type="text" id="name" name="name" required>
+    <button type="submit">Submit</button>
+</form>
+
+<form method="post" action="" style="margin-top: 10px;">
+    <input type="hidden" name="increment" value="1">
+    <button type="submit">Increment</button>
+</form>
+
+<p>Current value: <?php echo SharedValue::getValue(); ?></p>
